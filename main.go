@@ -3,43 +3,8 @@ package main
 import "fmt"
 
 func main() {
-
 	fmt.Println("dcp39 - Conway's Game of Life")
-	//liveCells := [][2]int{{1, 6}, {3, 2}, {3, 3}, {3, 4}, {5, 2}, {5, 6}, {5, 7}, {6, 1}, {6, 2}, {6, 6}}
-
-	liveCells := [][2]int{{1, 1}, {2, 2}, {5, 7}} // live cells in row,col where upper left is origin
-
-	rowMin := liveCells[0][0]
-	rowMax := liveCells[0][0]
-	colMin := liveCells[0][1]
-	colMax := liveCells[0][1]
-
-	// First determine the board dimensions
-	for i := 0; i < len(liveCells); i++ {
-		r := liveCells[i][0]
-		c := liveCells[i][1]
-
-		if r < rowMin {
-			rowMin = r
-		}
-
-		if r > rowMax {
-			rowMax = r
-		}
-
-		if c < colMin {
-			colMin = c
-		}
-
-		if c > colMax {
-			colMax = c
-		}
-	}
-
-	fmt.Printf("rowMin=%d  rowMax=%d  colMin=%d  colMax=%d\n", rowMin, rowMax, colMin, colMax)
-	fmt.Printf("Board is %d rows and %d columns\n", rowMax-rowMin+1, colMax-colMin+1)
-
-	printBoard(liveCells)
+	fmt.Println("Run Unit Tests!")
 }
 
 //GetNextBoard will take a gameboard in the form of live cells and return the next gameboard in the form of livecells
@@ -74,8 +39,8 @@ func GetNextBoard(liveCells [][2]int) [][2]int {
 	}
 
 	// make the next board 2 rows and 2 columns bigger than the existing board, just in case
-	for r := rowMin - 1; r <= rowMax+1; r++ {
-		for c := colMin - 1; c <= colMax+1; c++ {
+	for r := rowMin - 1; r <= (rowMax + 1); r++ {
+		for c := colMin - 1; c <= (colMax + 1); c++ {
 			neighborCount := CountNeighbors(liveCells, r, c)
 			if IsCellLive(liveCells, r, c) {
 				// if it has < 2 live neighbor, it will die
@@ -98,6 +63,7 @@ func GetNextBoard(liveCells [][2]int) [][2]int {
 	return nextBoard
 }
 
+// IsCellLive will test if a cell exists at row,col
 func IsCellLive(liveCells [][2]int, row int, col int) bool {
 	for _, cell := range liveCells {
 		if cell[0] == row && cell[1] == col {
@@ -138,8 +104,7 @@ func CellsAreNeighbors(r1 int, c1 int, r2 int, c2 int) bool {
 }
 
 // given a board represented by boolean values
-
-func printBoard(liveCells [][2]int) {
+func PrintBoard(liveCells [][2]int) {
 
 	rowMin := liveCells[0][0]
 	rowMax := liveCells[0][0]
@@ -197,5 +162,4 @@ func printBoard(liveCells [][2]int) {
 		}
 		fmt.Println()
 	}
-
 }
