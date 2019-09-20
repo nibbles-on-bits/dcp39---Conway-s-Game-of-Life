@@ -2,133 +2,138 @@ package main
 
 import "fmt"
 
-type gameBoard struct {
-	xMin      int
-	xMax      int
-	yMin      int
-	yMax      int
-	liveCells [][2]int // stores the x,y coordinates of each live cell
+func main() {
+	fmt.Println("dcp39 - Conway's Game of Life")
+	fmt.Println("Run Unit Tests!")
 }
 
-func GetBoardFromLiveCells(liveCells [][2]int) gameBoard {
-	board := gameBoard{}
-	board.xMin = liveCells[0][0]
-	board.xMax = liveCells[0][0]
-	board.yMin = liveCells[0][1]
-	board.yMax = liveCells[0][1]
-	board.liveCells = liveCells
+//GetNextBoard will take a gameboard in the form of live cells and return the next gameboard in the form of livecells
+func GetNextBoard(liveCells [][2]int) [][2]int {
+	nextBoard := [][2]int{}
+
+	rowMin := liveCells[0][0]
+	rowMax := liveCells[0][0]
+	colMin := liveCells[0][1]
+	colMax := liveCells[0][1]
 
 	// First determine the board dimensions
 	for i := 0; i < len(liveCells); i++ {
-		x := liveCells[i][0]
-		y := liveCells[i][1]
+		r := liveCells[i][0]
+		c := liveCells[i][1]
 
-		if x < board.xMin {
-			board.xMin = x
+		if r < rowMin {
+			rowMin = r
 		}
 
-		if x > board.xMax {
-			board.xMax = x
+		if r > rowMax {
+			rowMax = r
 		}
 
-		if y < board.yMin {
-			board.yMin = y
+		if c < colMin {
+			colMin = c
 		}
 
-		if y > board.yMax {
-			board.yMax = y
+		if c > colMax {
+			colMax = c
 		}
 	}
 
-	width := board.xMax - board.xMin + 1
-	height := board.yMax - board.yMin + 1
+	// make the next board 2 rows and 2 columns bigger than the existing board, just in case
+	for r := rowMin - 1; r <= (rowMax + 1); r++ {
+		for c := colMin - 1; c <= (colMax + 1); c++ {
+			neighborCount := CountNeighbors(liveCells, r, c)
+			if IsCellLive(liveCells, r, c) {
+				// if it has < 2 live neighbor, it will die
 
-	// liveMatrix is a 2 dimensional slice of bool's representing the board in it's currentState
-	liveMatrix := make([][]bool, height)
-	for y := 0; y < height; y++ {
-		liveMatrix[y] = make([]bool, width)
-	}
+				// if it has 2-3 live neighbors it lives
+				if neighborCount >= 2 && neighborCount <= 3 {
+					nextBoard = append(nextBoard, [2]int{r, c})
+				}
 
-	for i := 0; i < len(liveCells); i++ {
-		x := liveCells[i][0]
-		y := liveCells[i][1]
-
-		liveMatrix[x-board.xMin][y-board.yMin] = true
-	}
-
-	fmt.Printf("height=%d  width=%d\n", height, width)
-	fmt.Printf("xmin=%d xmax=%d ymin=%d ymax=%d\n", board.xMin, board.xMax, board.yMin, board.yMax)
-	fmt.Println(board)
-
-	// now we have a boolean representation of the board
-	for row := yMin; row <= yMax; row++ {
-		for col := xMin; col <= xMax; col++ {
-			if board[col-xMin][row-yMin] {
-				fmt.Print("*")
+				// if it has > 3 live neighbors it dies
 			} else {
-				fmt.Print(".")
+				// if it has 3 live neighbors it will be born
+				if neighborCount == 3 {
+					nextBoard = append(nextBoard, [2]int{r, c})
+				}
 			}
 		}
-		fmt.Println()
 	}
+
+	return nextBoard
+}
+
+// IsCellLive will test if a cell exists at row,col
+func IsCellLive(liveCells [][2]int, row int, col int) bool {
+	for _, cell := range liveCells {
+		if cell[0] == row && cell[1] == col {
+			return true
+		}
+	}
+
+	return false
+}
+
+// CountNeighbors will find out how many alive neighbors there are for a cell at row,col
+func CountNeighbors(liveCells [][2]int, row int, col int) int {
+	cnt := 0
+
+	for i := 0; i < len(liveCells); i++ {
+		if CellsAreNeighbors(row, col, liveCells[i][0], liveCells[i][1]) {
+			cnt++
+		}
+	}
+
+	return cnt
+}
+
+// CellsAreNeighbors will test to see if two cell coordinates are neighboring each other
+func CellsAreNeighbors(r1 int, c1 int, r2 int, c2 int) bool {
+	ret := false
+	if r1 == r2 && c1 == c2 {
+		return false
+	}
+
+	if ((r1 - r2) >= -1) && ((r1 - r2) <= 1) {
+		if ((c1 - c2) >= -1) && ((c1 - c2) <= 1) {
+			return true
+		}
+	}
+
 	return ret
 }
 
-func (gameBoard) print() {
-	fmt.Println("Welcome to gameBoard.print()")
-}
-
-func main() {
-
-	fmt.Println("dcp39 - Conway's Game of Life")
-	//liveCells := [][2]int{{1, 6}, {3, 2}, {3, 3}, {3, 4}, {5, 2}, {5, 6}, {5, 7}, {6, 1}, {6, 2}, {6, 6}}
-	liveCells := [][2]int{{1, 1}, {2, 2}, {5, 5}}
-
-	GetBoardFromLiveCells(liveCells)
-
-	fmt.Printf("len(liveCells)=%d\n", len(liveCells))
-
-	fmt.Println()
-	printBoard(liveCells)
-}
-
-func getNextBoard(thisBoard [][]bool) {
-	// First thing we want to do is determine if the next board will be the same dimensions
-	// or will increase dimensions.
-
-}
-
 // given a board represented by boolean values
+func PrintBoard(liveCells [][2]int) {
 
-func printBoard(liveCells [][2]int) {
-	xMin := liveCells[0][0]
-	xMax := liveCells[0][0]
-	yMin := liveCells[0][1]
-	yMax := liveCells[0][1]
+	rowMin := liveCells[0][0]
+	rowMax := liveCells[0][0]
+	colMin := liveCells[0][1]
+	colMax := liveCells[0][1]
 
 	for i := 0; i < len(liveCells); i++ {
-		x := liveCells[i][0]
-		y := liveCells[i][1]
+		r := liveCells[i][0]
+		c := liveCells[i][1]
 
-		if x < xMin {
-			xMin = x
+		if r < rowMin {
+			rowMin = r
 		}
 
-		if x > xMax {
-			xMax = x
+		if r > rowMax {
+			rowMax = r
 		}
 
-		if y < yMin {
-			yMin = y
+		if c < colMin {
+			colMin = c
 		}
 
-		if y > yMax {
-			yMax = y
+		if c > colMax {
+			colMax = c
 		}
 	}
 
-	width := xMax - xMin + 1
-	height := yMax - yMin + 1
+	width := colMax - colMin + 1
+	height := rowMax - rowMin + 1
 
 	board := make([][]bool, height)
 	for y := 0; y < height; y++ {
@@ -136,20 +141,20 @@ func printBoard(liveCells [][2]int) {
 	}
 
 	for i := 0; i < len(liveCells); i++ {
-		x := liveCells[i][0]
-		y := liveCells[i][1]
+		r := liveCells[i][0]
+		c := liveCells[i][1]
 
-		board[x-xMin][y-yMin] = true
+		board[r-rowMin][c-colMin] = true
 	}
 
 	fmt.Printf("height=%d  width=%d\n", height, width)
-	fmt.Printf("xmin=%d xmax=%d ymin=%d ymax=%d\n", xMin, xMax, yMin, yMax)
+
 	fmt.Println(board)
 
 	// now we have a boolean representation of the board
-	for row := yMin; row <= yMax; row++ {
-		for col := xMin; col <= xMax; col++ {
-			if board[col-xMin][row-yMin] {
+	for row := rowMin; row <= rowMax; row++ {
+		for col := colMin; col <= colMax; col++ {
+			if board[row-rowMin][col-colMin] {
 				fmt.Print("*")
 			} else {
 				fmt.Print(".")
@@ -157,5 +162,42 @@ func printBoard(liveCells [][2]int) {
 		}
 		fmt.Println()
 	}
+}
 
+// given a board represented by boolean values
+func PrintCustomBoard(liveCells [][2]int, top int, bottom int, left int, right int) {
+
+	width := right - left + 1
+	height := bottom - top + 1
+
+	board := make([][]bool, height)
+	for y := 0; y < height; y++ {
+		board[y] = make([]bool, width)
+	}
+
+	for i := 0; i < len(liveCells); i++ {
+		r := liveCells[i][0]
+		c := liveCells[i][1]
+
+		if r >= top && r <= bottom && c >= left && c <= right {
+			board[r-top][c-left] = true
+		}
+
+	}
+
+	//fmt.Printf("height=%d  width=%d\n", height, width)
+
+	//fmt.Println(board)
+
+	// now we have a boolean representation of the board
+	for row := top; row <= bottom; row++ {
+		for col := left; col <= right; col++ {
+			if board[row-top][col-left] {
+				fmt.Print("*")
+			} else {
+				fmt.Print(".")
+			}
+		}
+		fmt.Println()
+	}
 }
