@@ -163,3 +163,41 @@ func PrintBoard(liveCells [][2]int) {
 		fmt.Println()
 	}
 }
+
+// given a board represented by boolean values
+func PrintCustomBoard(liveCells [][2]int, top int, bottom int, left int, right int) {
+
+	width := right - left + 1
+	height := bottom - top + 1
+
+	board := make([][]bool, height)
+	for y := 0; y < height; y++ {
+		board[y] = make([]bool, width)
+	}
+
+	for i := 0; i < len(liveCells); i++ {
+		r := liveCells[i][0]
+		c := liveCells[i][1]
+
+		if r >= top && r <= bottom && c >= left && c <= right {
+			board[r-top][c-left] = true
+		}
+
+	}
+
+	//fmt.Printf("height=%d  width=%d\n", height, width)
+
+	//fmt.Println(board)
+
+	// now we have a boolean representation of the board
+	for row := top; row <= bottom; row++ {
+		for col := left; col <= right; col++ {
+			if board[row-top][col-left] {
+				fmt.Print("*")
+			} else {
+				fmt.Print(".")
+			}
+		}
+		fmt.Println()
+	}
+}
