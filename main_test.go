@@ -45,5 +45,45 @@ func TestCellsAreNeighbors(t *testing.T) {
 			t.Errorf("CellsAreNeighbors(%d,%d,%d,%d) = >>%v<<; want >>%v<<", tc[0], tc[1], tc[2], tc[3], got, want)
 		}
 	}
+}
+
+func TestCountNeighbors(t *testing.T) {
+
+	liveCells := [][2]int{{1, 1}, {2, 2}, {5, 7}}
+
+	//
+	got := CountNeighbors(liveCells, 0, 0)
+	want := 1
+	if got != want {
+		t.Errorf("CountNeighbors(%v,%d,%d)  got:%v  want %v\n", liveCells, 0, 0, got, want)
+	}
+
+	got = CountNeighbors(liveCells, 1, 2)
+	want = 2
+	if got != want {
+		t.Errorf("CountNeighbors(%v,%d,%d)  got:%v  want %v\n", liveCells, 0, 0, got, want)
+	}
+
+}
+
+func TestIsCellLive(t *testing.T) {
+
+	liveCells := [][2]int{{1, 1}, {2, 2}, {5, 7}}
+
+	got := IsCellLive(liveCells, 0, 0)
+	want := false
+	if got != want {
+		t.Errorf("CountNeighbors(%v,%d,%d)  got:%v  want %v\n", liveCells, 0, 0, got, want)
+	}
+
+	got = IsCellLive(liveCells, 2, 2)
+	want = true
+	if got != want {
+		t.Errorf("CountNeighbors(%v,%d,%d)  got:%v  want %v\n", liveCells, 2, 2, got, want)
+	}
+
+}
+
+func TestGetNextBoard(t *testing.T) {
 
 }
